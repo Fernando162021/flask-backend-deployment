@@ -7,7 +7,7 @@ app = Flask(__name__)
 def saludo():
     return jsonify({'mensaje': 'Hola Mundo'}), 200
 
-@app.route('/depedida', methods=['GET'])
+@app.route('/despedida', methods=['GET'])
 def despedida():
     return jsonify({'mensaje': 'Adiós Mundo'}), 200
 
