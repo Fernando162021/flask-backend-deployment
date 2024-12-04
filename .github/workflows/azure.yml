@@ -1,0 +1,36 @@
+name: Deploy to Azure Web App
+
+on:
+  push:
+    branches:
+      - main  
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: contenedorinfra.azurecr.io
+          username: ${{ secrets.AZURE_USERNAME }}
+          password: ${{ secrets.AZURE_PASSWORD }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t flaskbackendacr.azurecr.io/flask-backend:latest .
+          docker push flaskbackendacr.azurecr.io/flask-backend:latest
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: flaskbackendapp
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+          images: flaskbackendacr.azurecr.io/flask-backend:latest
